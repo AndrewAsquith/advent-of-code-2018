@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace day02
 {
@@ -51,10 +52,50 @@ namespace day02
             return repeatsTwice * repeatsThrice;
         }
 
-        static int PartTwo()
+        static String PartTwo()
         {
             //need to find the ids that differ by only one character
+            //and return the characters that are the same between them
+            
+            //this could probably be more efficient by using the character set as the outer loop as the alphabet is 
+            //smaller than the input space, but this is much more readable, even if it is O(n^2)
             var input = File.ReadAllLines("input.txt");
+
+            foreach (var id in input)
+            {
+                //compare each id to each other
+                foreach (var otherId in input)
+                {
+                    //buffer to store the resulting string
+                    var resultingId = new StringBuilder();
+
+                    //number of differences between the two ids being compared
+                    var numDifferences = 0;
+
+                    //for every character in the current string (we assume all the same length)
+                    for (var i = 0; i < id.Length; i++)
+                    {
+                        //if they match, add them to the buffer
+                        if (id[i] == otherId[i])
+                        {
+                            resultingId.Append(id[i]);
+                        }
+                        else
+                        {
+                            numDifferences++;
+                        }
+                        //if we have more than one difference short circuit this instance
+                        if (numDifferences > 1) { break; }
+                    }
+                    // if there was only one difference, this is what were we searching for
+                    if (numDifferences == 1)
+                    {
+                        return resultingId.ToString();
+                    }
+                }
+            }
+            //something went terribly wrong
+            return "No Candidates Found";
         }
     }
 }
