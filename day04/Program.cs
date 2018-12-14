@@ -33,7 +33,21 @@ namespace day04
 
         static int PartTwo(Dictionary<int, Dictionary<int, int>> sleepSchedule)
         {
-            return 0;
+            var maxMinute = -1;
+            var maxTime = 0;
+            var maxGuard = 0;
+
+            //find the guard with the highest number of minutes asleep in any given minute
+            foreach (var guard in sleepSchedule)
+            {
+                var highest = guard.Value.OrderByDescending(x => x.Value).First();
+                if (highest.Value > maxTime) {
+                    maxTime = highest.Value;
+                    maxMinute = highest.Key;
+                    maxGuard = guard.Key;
+                }
+            }
+            return maxGuard * maxMinute;
         }
 
         private static Dictionary<int, Dictionary<int, int>> Initialize()
@@ -56,6 +70,7 @@ namespace day04
             {
                 var parts = regex.Match(line);
 
+                //determine which action this line represents
                 switch (parts.Groups["action"].Value)
                 {
                     case "Guard":
@@ -94,11 +109,12 @@ namespace day04
                         var minutesInState = currentEvent.Timestamp.Subtract(previousEvent.Timestamp).Minutes;
                         var sleepLog = sleepSchedule.GetValueOrDefault(currentEvent.GuardId, new Dictionary<int, int>());
 
-
+                        //check if the guard already exists and create if not
                         if (!sleepSchedule.ContainsKey(currentEvent.GuardId))
                         {
                             sleepSchedule.Add(currentEvent.GuardId, new Dictionary<int, int>());
                         }
+                        //increment the times each minute has appeared
                         for (int i = 0; i < minutesInState; i++)
                         {
                             var currentMinute = previousEvent.Timestamp.AddMinutes(i).Minute;
@@ -116,6 +132,7 @@ namespace day04
 
                     }
                 }
+                //need to track the previous event as well
                 previousEvent = currentEvent;
             }
 
